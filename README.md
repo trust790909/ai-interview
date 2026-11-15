@@ -35,3 +35,9 @@ API 使用 Responses API 與 Zod 結構化輸出，SQLite 保存會話與速率�
 
 
 另可用 `node --test tests/api.mjs` 驗證 5 題保險理賠與 10 題科技產品的 OpenAI 整合流程。
+
+## Vercel 正式部署
+
+在 Vercel 專案的 Storage 頁面連結 Upstash Redis，並選擇 Production 環境。應用程式支援 UPSTASH_REDIS_REST_URL 與 UPSTASH_REDIS_REST_TOKEN，也支援整合提供的 KV_REST_API_URL 與 KV_REST_API_TOKEN。請在專案的 Production 環境設定 OPENAI_API_KEY，再重新部署。預覽部署可單獨連結資料庫與設定金鑰。
+
+Vercel 使用 Redis 保存會話、請求限額及操作鎖，會話自建立起七天後自動過期。本機未設定 Redis 時使用 SQLite。部署後可設定 INTERVIEW_TEST_URL 為正式網址，再執行 node tests/browser.mjs，以合成資料測試完整流程。

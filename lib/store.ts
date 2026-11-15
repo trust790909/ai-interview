@@ -30,8 +30,8 @@ export function write(session: InterviewSession, owner: string, token: string) {
     ON CONFLICT(id) DO UPDATE SET data=excluded.data WHERE sessions.owner=excluded.owner`)
     .run(session.id, owner, now + retention, JSON.stringify(session), session.id, token, now).changes === 1;
 }
-export function remove(id: string, owner: string) {
-  database().prepare("DELETE FROM sessions WHERE id=? AND owner=?").run(id, owner);
+export function remove(id: string, owner: string, token: string) {
+  database().prepare("DELETE FROM sessions WHERE id=? AND owner=? AND EXISTS (SELECT 1 FROM leases WHERE id=? AND token=? AND expires>?)").run(id, owner, id, token, Date.now());
 }
 export function acquire(id: string, token: string) {
   const connection = database();
