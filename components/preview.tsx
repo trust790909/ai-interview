@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUpRight, Bot, Check } from "lucide-react";
+import { ArrowUpRight, Check } from "lucide-react";
+import Image from "next/image";
 
 const tabs = ["模擬面試", "能力評分", "逐題優化"];
 const scores = [["職務專業", 86], ["分析與解決", 83], ["表達與邏輯", 88], ["合作與溝通", 81], ["完整與具體", 76]] as const;
@@ -18,7 +19,7 @@ export function Preview({ interactive = false }: { interactive?: boolean }) {
     <div className={interactive ? "preview-body" : "preview-body hero-preview-body"}>
       {active === 0 && <><div className="preview-context"><div><strong>數位專案經理</strong><small>保險業 · 中階</small></div><span className="pill">第 2 / 5 題</span></div>
         <div className="track"><span style={{ width: "40%" }} /></div>
-        <div className="mini-message"><span className="bot"><Bot size={17} /></span><div><small>AI 面試官</small><div className="bubble">{demoQuestion}</div></div></div>
+        <div className="mini-message"><Image className="bot" src="/interview-mascot-blue.svg" width={36} height={36} alt="" /><div><small>AI 面試官</small><div className="bubble">{demoQuestion}</div></div></div>
         <div className="mini-response"><small>我的回答</small><div className="bubble">{demoAnswer}</div></div>
         {!interactive && <div className="preview-score"><span className="preview-score-icon"><ArrowUpRight size={18} /></span><div><strong>練習報告預覽</strong><small>能力評分與逐題改善建議</small></div><strong className="sample-score">84<span> / 100</span></strong></div>}
       </>}

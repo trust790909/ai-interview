@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Bot, LoaderCircle, Send } from "lucide-react";
+import { Send } from "lucide-react";
+import Image from "next/image";
 import { message, recentKey, request } from "@/lib/client";
 import { useInterview } from "./use-interview";
 
 function Message({ label, text, user = false }: { label: string; text: string; user?: boolean }) {
-  return <article className={user ? "message user" : "message"}>{!user && <span className="bot"><Bot size={18} /></span>}<div><div className="fine font-bold">{label}</div><div className="bubble">{text}</div></div></article>;
+  return <article className={user ? "message user" : "message"}>{!user && <Image className="bot" src="/interview-mascot-blue.svg" width={36} height={36} alt="" />}<div><div className="fine font-bold">{label}</div><div className="bubble">{text}</div></div></article>;
 }
 
 export function Session({ id }: { id: string }) {
@@ -70,7 +71,7 @@ export function Session({ id }: { id: string }) {
         })}
         <div ref={tail} />
       </div>
-      {busy && <p role="status" className="notice flex items-center gap-2"><LoaderCircle className="loader" size={17} />{answering ? "AI 面試官思考中…" : "正在分析回答，生成能力評分與逐題建議…"} </p>}
+      {busy && <p role="status" className="notice flex items-center gap-2"><Image className="bot mascot-thinking" src="/interview-mascot-blue.svg" width={36} height={36} alt="" />{answering ? "AI 面試官思考中…" : "正在分析回答，生成能力評分與逐題建議…"} </p>}
       {error && <p className="notice error" role="alert">{error}</p>}
       {answering && <form className="composer" onSubmit={e => { e.preventDefault(); void operation("answer"); }}>
         <label className="form-label" htmlFor="answer">輸入回答</label>

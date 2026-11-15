@@ -111,3 +111,9 @@ summary::-webkit-details-marker{display:none}
 .report-details .dimension-summary{display:grid;grid-template-columns:minmax(0,1fr) auto auto}.dimension-summary .track{grid-column:1/-1}
 .hero-copy{container-type:inline-size}.hero-copy h1{font-size:clamp(1.8rem,10.3cqw,3.7rem)}
 @media(max-width:700px){.steps{grid-template-columns:1fr}}
+
+.bot { width: 36px; height: 36px; border-radius: 9px; }
+.mascot-thinking { animation: mascot-nod 1.4s ease-in-out infinite; }
+@keyframes mascot-nod {
+  50% { transform: translateY(-2px) rotate(-7deg); }
+}
