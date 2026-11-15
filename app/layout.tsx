@@ -3,10 +3,26 @@ import { Footer, Header } from "@/components/brand";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ai-interview-ruddy-eight.vercel.app"),
   title: { default: "AI 面試模擬器", template: "%s｜AI 面試模擬器" },
   description: "貼上職缺描述，進行 AI 模擬面試，取得能力評分與逐題改善建議。",
   referrer: "no-referrer",
-  icons: { icon: "/interview-icon.svg" },
+  openGraph: {
+    type: "website",
+    locale: "zh_TW",
+    siteName: "AI 面試模擬器",
+    title: "AI 面試模擬器｜練習一下，上場更有自信",
+    description: "貼上職缺描述，讓 AI 陪你練面試，回答後還能查看逐題回饋。",
+    images: [{ url: "/interview-share-v1.jpg", width: 1200, height: 630, type: "image/jpeg", alt: "戴著麥克風的薄荷綠機器人陪你練面試" }],
+  },
+  twitter: { card: "summary_large_image" },
+  icons: {
+    icon: [
+      { url: "/interview-mascot.png", type: "image/png", sizes: "192x192" },
+      { url: "/interview-mascot.svg", type: "image/svg+xml", sizes: "any" },
+    ],
+    apple: "/interview-mascot.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
