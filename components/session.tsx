@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 import Image from "next/image";
-import { message, recentKey, request } from "@/lib/client";
+import { forgetRecent, message, request } from "@/lib/client";
 import { useInterview } from "./use-interview";
 
 function Message({ label, text, user = false }: { label: string; text: string; user?: boolean }) {
@@ -34,7 +34,7 @@ export function Session({ id }: { id: string }) {
     try {
       const next = await request(action === "answer" ? { action, id, revision: session.revision, answer: draft } : { action, id });
       if (action === "delete") {
-        if (localStorage.getItem(recentKey) === id) localStorage.removeItem(recentKey);
+        forgetRecent(id);
         router.replace("/interview");
         return;
       }
@@ -80,7 +80,7 @@ export function Session({ id }: { id: string }) {
         }} />
         <div className="spread"><span className="fine">{draft.length} / 1,200 · Enter 送出，Shift + Enter 換行</span><button className="btn primary" disabled={busy || !draft.trim()}>{error ? "重新送出" : "送出回答"} <Send size={16} /></button></div>
       </form>}
-      {session.status === "EVALUATING" && <div className="stack"><p>已完成全部題目。現在可以生成你的練習報告。</p><div><button className="btn primary" disabled={busy} onClick={() => void operation("evaluate")}>{error ? "重試產生報告" : "產生評估報告"}</button></div></div>}
+      {session.status === "EVALUATING" && <div className="stack"><p>已完成所有題目。產生報告後，就能查看評分與逐題建議。</p><div><button className="btn primary" disabled={busy} onClick={() => void operation("evaluate")}>{error ? "重試產生報告" : "產生評估報告"}</button></div></div>}
       {session.status === "COMPLETED" && <div><Link className="btn primary" href={"/interview/result/" + id}>查看評估報告</Link></div>}
     </section>
     <div className="spread"><Link className="text-link fine" href="/interview">回設定頁</Link><button type="button" className="fine danger underline" disabled={busy} onClick={() => void operation("delete")}>刪除本次面試</button></div>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, LoaderCircle, Minus, Plus } from "lucide-react";
 import { industries, levels, settingsSchema, type InterviewSettings } from "@/lib/schema";
-import { message, prepare, recentKey, remember, request } from "@/lib/client";
+import { message, prepare, recentInterview, remember, request } from "@/lib/client";
 
 const defaults: InterviewSettings = { industry: "保險業", customIndustry: "", jobTitle: "", jobDescription: "", questionCount: 5, difficulty: "中階" };
 const example = "負責壽險業務員數位工具的需求訪談、專案規劃與上線推動。與通路、資訊、法遵及營運團隊協作，安排試辦與教育訓練，建立使用率與流程效率指標。須具備跨部門協調、需求分析和數據追蹤能力，有金融服務或數位轉型經驗尤佳。";
@@ -26,7 +26,7 @@ export function Setup() {
   useEffect(() => {
     let disposed = false;
     async function initialize() {
-      setRecent(localStorage.getItem(recentKey));
+      setRecent(recentInterview());
       if (!source) return;
       try {
         const session = await request({ action: "read", id: source });
@@ -49,7 +49,7 @@ export function Setup() {
     e.preventDefault();
     if (submitting.current) return;
     const parsed = settingsSchema.safeParse({ ...settings, questionCount: Number(count) });
-    if (!parsed.success) { setError("請填寫職缺、20 至 5,000 字的 JD，以及 3 至 10 的整數題數。若選擇其他產業，也請填寫產業名稱。"); return; }
+    if (!parsed.success) { setError("請填寫職缺、20 至 5,000 字的職缺描述，以及 3 至 10 的整數題數。若選擇其他產業，也請填寫產業名稱。"); return; }
     const body = JSON.stringify(parsed.data);
     if (attempt.current?.body !== body) attempt.current = { id: crypto.randomUUID(), body };
     submitting.current = true;
@@ -68,7 +68,7 @@ export function Setup() {
   }
 
   return <div className="stack">
-    {recent && <div className="notice spread"><span>可以回到這個瀏覽器最近的練習。</span><Link className="text-link" href={"/interview/session/" + recent}>開啟最近練習</Link></div>}
+    {recent && <div className="notice spread"><span>接續上一次的練習，或在下方開始新面試。</span><Link className="text-link" href={"/interview/session/" + recent}>開啟最近練習</Link></div>}
     <form className="card stack" onSubmit={start}>
       <fieldset className="stack" disabled={loading || busy}>
         <div className="form-grid">
@@ -77,9 +77,9 @@ export function Setup() {
         </div>
         {settings.industry === "其他產業" && <label className="field">產業名稱<input required maxLength={60} value={settings.customIndustry} onChange={e => update("customIndustry", e.target.value)} /></label>}
         <div className="field">
-          <div className="spread"><label htmlFor="jd">職缺描述（JD）</label><button className="text-link" type="button" onClick={() => set(s => ({ ...s, industry: "保險業", jobTitle: "數位專案經理", jobDescription: example }))}>填入範例 JD</button></div>
+          <div className="spread"><label htmlFor="jd">職缺描述（JD）</label><button className="text-link" type="button" onClick={() => set(s => ({ ...s, industry: "保險業", jobTitle: "數位專案經理", jobDescription: example }))}>填入範例</button></div>
           <textarea id="jd" required minLength={20} maxLength={5000} rows={6} placeholder="貼上工作內容、主要職責、專業要求及所需經驗…" value={settings.jobDescription} onChange={e => update("jobDescription", e.target.value)} />
-          <div className="spread fine"><small>請移除姓名、聯絡方式及機密資訊。</small><small>{settings.jobDescription.length} / 5,000</small></div>
+          <div className="spread fine"><small>請輸入 20～5,000 字，並移除姓名、聯絡方式與機密資訊。</small><small>{settings.jobDescription.length} / 5,000</small></div>
         </div>
         <div className="field">
           <label htmlFor="count">主要題數</label>
@@ -96,7 +96,7 @@ export function Setup() {
         </fieldset>
       </fieldset>
       {error && <p className="notice error" role="alert">{error}</p>}
-      <div className="actions"><button className="btn primary" disabled={loading || busy} type="submit">{busy ? <><LoaderCircle className="loader" size={18} /> AI 正在根據 JD 出題…</> : <>開始模擬面試 <ArrowRight size={17} /></>}</button><Link className="text-link fine" href="/privacy">面試資料如何處理</Link></div>
+      <div className="actions"><button className="btn primary" disabled={loading || busy} type="submit">{busy ? <><LoaderCircle className="loader" size={18} /> AI 正在依職缺描述出題…</> : <>開始模擬面試 <ArrowRight size={17} /></>}</button><Link className="text-link fine" href="/privacy">面試資料如何處理</Link></div>
     </form>
   </div>;
 }

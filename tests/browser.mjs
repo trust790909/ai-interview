@@ -5,15 +5,16 @@ const base = process.env.INTERVIEW_TEST_URL || "http://127.0.0.1:3091";
 const browser = await chromium.launch({ channel: "msedge", headless: true });
 const answer = "我會先盤點目標、目前數據和主要使用障礙，訪談第一線使用者與相關單位，確認優先改善的情境。接著安排小規模試辦，針對實際阻礙調整，並以執行前後的使用情形與使用者回饋追蹤結果。";
 try {
-  const context = await browser.newContext({ viewport: { width: 1360, height: 900 } });
+  const context = await browser.newContext({ viewport: process.env.INTERVIEW_TEST_MOBILE ? { width: 390, height: 844 } : { width: 1360, height: 900 } });
   const page = await context.newPage();
   await page.goto(base);
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await page.getByRole("button", { name: "能力評分" }).click();
   await page.getByRole("heading", { name: "五大能力評分" }).waitFor();
   await page.getByText("可以自行設定面試題數嗎？").click();
   await page.getByText("可以設定 3 至 10 道主要題目。").waitFor();
   await page.getByRole("link", { name: "立即開始 AI 模擬面試" }).click();
-  await page.getByRole("button", { name: "填入範例 JD" }).click();
+  await page.getByRole("button", { name: "填入範例" }).click();
   await page.getByLabel("主要題數").fill("3");
   await page.getByRole("button", { name: "開始模擬面試" }).click();
   await page.waitForURL("**/interview/session/*", { timeout: 50_000 });
@@ -34,8 +35,14 @@ try {
 
   const first = await read();
   await page.getByLabel("輸入回答").fill(answer);
-  await page.route("**/api/interview", route => route.abort("failed"), { times: 1 });
+  await page.route("**/api/interview", route => route.fulfill({
+    status: 502, contentType: "text/html", body: "<h1>Gateway unavailable</h1>",
+  }), { times: 1 });
   await page.getByRole("button", { name: "送出回答" }).click();
+  await page.getByText("面試服務暫時無法完成操作，請稍後重試。", { exact: true }).waitFor();
+
+  await page.route("**/api/interview", route => route.abort("failed"), { times: 1 });
+  await page.getByRole("button", { name: "重新送出" }).click();
   await page.getByText("網路連線失敗，請重試。", { exact: true }).waitFor();
   assert.equal((await read()).revision, first.revision);
   assert.equal(await page.getByLabel("輸入回答").inputValue(), answer);
@@ -86,6 +93,7 @@ try {
   assert.equal((await post({ action: "delete" })).status(), 204);
 
   await page.goto(base);
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await page.getByLabel("開啟導覽").click();
   await page.getByRole("link", { name: "免費開始模擬" }).filter({ visible: true }).click();
   await page.getByRole("heading", { name: "設定你的模擬面試" }).waitFor();
@@ -94,4 +102,3 @@ try {
 } finally {
   await browser.close();
 }
-

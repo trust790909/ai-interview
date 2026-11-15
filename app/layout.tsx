@@ -26,5 +26,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="zh-Hant"><body><a className="skip" href="#main">跳至主要內容</a><Header /><main id="main">{children}</main><Footer /></body></html>;
+  return <html lang="zh-Hant" data-scroll-behavior="smooth"><body><a className="skip" href="#main">跳至主要內容</a><Header /><main id="main">{children}</main><Footer /></body></html>;
 }
